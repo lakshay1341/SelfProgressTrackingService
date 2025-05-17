@@ -1,0 +1,1862 @@
+{
+	"info": {
+		"_postman_id": "e5f6g7h8-i9j0-k1l2-m3n4-o5p6q7r8s9t0",
+		"name": "Self Progress Tracking Service - 30-Day Learning Journey",
+		"description": "A comprehensive collection that simulates a user's learning journey over a 30-day period using the Self Progress Tracking Service. The collection demonstrates realistic usage patterns including high productivity days, moderate progress days, and days with little to no activity.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Setup",
+			"description": "Initial setup requests for user registration, email verification, and login",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Registration successful message\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"User registered successfully\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"learner30days\",\n    \"email\": \"learner30days@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user for the 30-day learning journey"
+					}
+				},
+				{
+					"name": "Verify Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Email verification successful\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Email verified successfully\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-email?token={{verificationToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"verify-email"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{verificationToken}}",
+									"description": "The verification token received via email"
+								}
+							]
+						},
+						"description": "Verify the user's email address using the token received via email. Note: In a real scenario, you would need to extract this token from the email. For testing purposes, you can set this as an environment variable manually."
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"accessToken\", jsonData.accessToken);",
+									"pm.environment.set(\"refreshToken\", jsonData.refreshToken);",
+									"pm.environment.set(\"userId\", jsonData.userId);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login successful\", function () {",
+									"    pm.expect(jsonData.username).to.eql(\"learner30days\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"learner30days\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login to get JWT tokens for authentication"
+					}
+				},
+				{
+					"name": "Create Full Stack Web Development Syllabus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"syllabusId\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Syllabus created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"Full Stack Web Development\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Full Stack Web Development\",\n    \"description\": \"A comprehensive syllabus covering HTML, CSS, JavaScript, React, and Node.js for full stack web development\",\n    \"isPublic\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/syllabi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi"
+							]
+						},
+						"description": "Create the main syllabus for the 30-day learning journey"
+					}
+				},
+				{
+					"name": "Create Subject 1: HTML & CSS Fundamentals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subject1Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Subject created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"HTML & CSS Fundamentals\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"HTML & CSS Fundamentals\",\n    \"description\": \"Learn the basics of HTML and CSS for web development\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 7}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/{{syllabusId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"{{syllabusId}}"
+							]
+						},
+						"description": "Create the first subject in the syllabus"
+					}
+				},
+				{
+					"name": "Create Subject 2: JavaScript Essentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subject2Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Subject created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"JavaScript Essentials\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"JavaScript Essentials\",\n    \"description\": \"Learn core JavaScript concepts and DOM manipulation\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 14}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/{{syllabusId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"{{syllabusId}}"
+							]
+						},
+						"description": "Create the second subject in the syllabus"
+					}
+				},
+				{
+					"name": "Create Subject 3: React Basics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subject3Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Subject created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"React Basics\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"React Basics\",\n    \"description\": \"Introduction to React library and component-based architecture\",\n    \"order\": 3,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 21}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/{{syllabusId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"{{syllabusId}}"
+							]
+						},
+						"description": "Create the third subject in the syllabus"
+					}
+				},
+				{
+					"name": "Create Subject 4: Node.js & Express",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subject4Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Subject created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"Node.js & Express\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Node.js & Express\",\n    \"description\": \"Server-side JavaScript with Node.js and Express framework\",\n    \"order\": 4,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 28}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/{{syllabusId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"{{syllabusId}}"
+							]
+						},
+						"description": "Create the fourth subject in the syllabus"
+					}
+				},
+				{
+					"name": "Create Topic 1.1: HTML Basics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"topic1Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Topic created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"HTML Basics\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"HTML Basics\",\n    \"description\": \"Introduction to HTML structure, elements, and attributes\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 3}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics/subject/{{subject1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"subject",
+								"{{subject1Id}}"
+							]
+						},
+						"description": "Create the first topic for HTML & CSS Fundamentals"
+					}
+				},
+				{
+					"name": "Create Topic 1.2: CSS Styling",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"topic2Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Topic created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"CSS Styling\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"CSS Styling\",\n    \"description\": \"CSS selectors, properties, and styling techniques\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 5}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics/subject/{{subject1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"subject",
+								"{{subject1Id}}"
+							]
+						},
+						"description": "Create the second topic for HTML & CSS Fundamentals"
+					}
+				},
+				{
+					"name": "Create Topic 1.3: Responsive Design",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"topic3Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Topic created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"Responsive Design\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Responsive Design\",\n    \"description\": \"Media queries, flexible layouts, and mobile-first design\",\n    \"order\": 3,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 7}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics/subject/{{subject1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"subject",
+								"{{subject1Id}}"
+							]
+						},
+						"description": "Create the third topic for HTML & CSS Fundamentals"
+					}
+				},
+				{
+					"name": "Create SubTopic 1.1.1: HTML Document Structure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subtopic1Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"SubTopic created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"HTML Document Structure\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"HTML Document Structure\",\n    \"description\": \"DOCTYPE, html, head, and body elements\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 2}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/topic/{{topic1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"topic",
+								"{{topic1Id}}"
+							]
+						},
+						"description": "Create the first subtopic for HTML Basics"
+					}
+				},
+				{
+					"name": "Create SubTopic 1.1.2: HTML Elements & Attributes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"subtopic2Id\", jsonData.id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"SubTopic created successfully\", function () {",
+									"    pm.expect(jsonData.title).to.eql(\"HTML Elements & Attributes\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"HTML Elements & Attributes\",\n    \"description\": \"Common HTML elements and their attributes\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 3}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/topic/{{topic1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"topic",
+								"{{topic1Id}}"
+							]
+						},
+						"description": "Create the second subtopic for HTML Basics"
+					}
+				}
+			]
+		},
+		{
+			"name": "Week 1",
+			"description": "First week of the learning journey (Days 1-7)",
+			"item": [
+				{
+					"name": "Day 1",
+					"description": "First day of learning - Getting started with HTML",
+					"item": [
+						{
+							"name": "Progress on HTML Document Structure",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic1Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 0}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 45,\n    \"notes\": \"Started learning about HTML document structure. Understood DOCTYPE declaration and basic HTML skeleton.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for the first day of learning"
+							}
+						}
+					]
+				},
+				{
+					"name": "Day 2",
+					"description": "Second day of learning - Completing HTML basics and starting CSS",
+					"item": [
+						{
+							"name": "Complete HTML Document Structure",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic1Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 1}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 30,\n    \"notes\": \"Completed learning about HTML document structure. Created several practice examples with proper document structure.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing HTML document structure"
+							}
+						},
+						{
+							"name": "Start HTML Elements & Attributes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic2Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 1}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 60,\n    \"notes\": \"Started learning about HTML elements and attributes. Covered basic text elements, links, and images.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for starting HTML elements and attributes"
+							}
+						}
+					]
+				},
+				{
+					"name": "Day 3",
+					"description": "Third day of learning - Completing HTML elements and starting CSS",
+					"item": [
+						{
+							"name": "Complete HTML Elements & Attributes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic2Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 2}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 45,\n    \"notes\": \"Completed learning about HTML elements and attributes. Created a practice webpage with various elements and proper attribute usage.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing HTML elements and attributes"
+							}
+						},
+						{
+							"name": "Create SubTopic 1.2.1: CSS Selectors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"subtopic3Id\", jsonData.id);",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"SubTopic created successfully\", function () {",
+											"    pm.expect(jsonData.title).to.eql(\"CSS Selectors\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"CSS Selectors\",\n    \"description\": \"Element, class, ID, and attribute selectors\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 4}}\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subtopics/topic/{{topic2Id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subtopics",
+										"topic",
+										"{{topic2Id}}"
+									]
+								},
+								"description": "Create the first subtopic for CSS Styling"
+							}
+						},
+						{
+							"name": "Start CSS Selectors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic3Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 2}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 30,\n    \"notes\": \"Started learning about CSS selectors. Covered element and class selectors.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for starting CSS selectors"
+							}
+						}
+					]
+				},
+				{
+					"name": "Day 4",
+					"description": "Fourth day of learning - No progress (procrastination day)",
+					"item": []
+				},
+				{
+					"name": "Day 5",
+					"description": "Fifth day of learning - Continuing with CSS",
+					"item": [
+						{
+							"name": "Complete CSS Selectors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic3Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 4}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 60,\n    \"notes\": \"Completed learning about CSS selectors. Covered ID selectors, attribute selectors, and combinators. Created practice examples with different selector types.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing CSS selectors"
+							}
+						},
+						{
+							"name": "Create SubTopic 1.2.2: CSS Properties",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"subtopic4Id\", jsonData.id);",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"SubTopic created successfully\", function () {",
+											"    pm.expect(jsonData.title).to.eql(\"CSS Properties\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"CSS Properties\",\n    \"description\": \"Common CSS properties for styling elements\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 5}}\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subtopics/topic/{{topic2Id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subtopics",
+										"topic",
+										"{{topic2Id}}"
+									]
+								},
+								"description": "Create the second subtopic for CSS Styling"
+							}
+						},
+						{
+							"name": "Start CSS Properties",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic4Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 4}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 45,\n    \"notes\": \"Started learning about CSS properties. Covered text styling, colors, and backgrounds.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for starting CSS properties"
+							}
+						}
+					]
+				},
+				{
+					"name": "Day 6 (Weekend)",
+					"description": "Sixth day of learning - Weekend catch-up session",
+					"item": [
+						{
+							"name": "Complete CSS Properties",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic4Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 5}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 90,\n    \"notes\": \"Completed learning about CSS properties. Covered box model, positioning, display, and other layout properties. Created a styled webpage applying various properties.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing CSS properties"
+							}
+						},
+						{
+							"name": "Create SubTopic 1.3.1: Media Queries",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"subtopic5Id\", jsonData.id);",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"SubTopic created successfully\", function () {",
+											"    pm.expect(jsonData.title).to.eql(\"Media Queries\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Media Queries\",\n    \"description\": \"Using media queries for responsive design\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 6}}\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subtopics/topic/{{topic3Id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subtopics",
+										"topic",
+										"{{topic3Id}}"
+									]
+								},
+								"description": "Create the first subtopic for Responsive Design"
+							}
+						},
+						{
+							"name": "Start Media Queries",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic5Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 5}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 60,\n    \"notes\": \"Started learning about media queries. Covered basic syntax and breakpoints for different device sizes.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for starting media queries"
+							}
+						}
+					]
+				},
+				{
+					"name": "Day 7 (Weekend)",
+					"description": "Seventh day of learning - Completing the first week",
+					"item": [
+						{
+							"name": "Complete Media Queries",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic5Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 6}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 75,\n    \"notes\": \"Completed learning about media queries. Created a responsive webpage that adapts to different screen sizes.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing media queries"
+							}
+						},
+						{
+							"name": "Create SubTopic 1.3.2: Flexible Layouts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"pm.environment.set(\"subtopic6Id\", jsonData.id);",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"SubTopic created successfully\", function () {",
+											"    pm.expect(jsonData.title).to.eql(\"Flexible Layouts\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Flexible Layouts\",\n    \"description\": \"Creating flexible layouts with Flexbox and Grid\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"{{$isoDatetime iso8601 7}}\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subtopics/topic/{{topic3Id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subtopics",
+										"topic",
+										"{{topic3Id}}"
+									]
+								},
+								"description": "Create the second subtopic for Responsive Design"
+							}
+						},
+						{
+							"name": "Start Flexible Layouts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"IN_PROGRESS\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic6Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 6}}\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 45,\n    \"notes\": \"Started learning about flexible layouts. Covered Flexbox basics and container properties.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for starting flexible layouts"
+							}
+						}
+					]
+				},
+				{
+					"name": "Week 1 Analytics",
+					"description": "Check progress analytics after the first week",
+					"item": [
+						{
+							"name": "Get Week 1 Progress Summary",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Progress summary contains expected data\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.totalDaysWithProgress).to.be.at.least(5);",
+											"    pm.expect(jsonData.totalTimeSpentMinutes).to.be.at.least(300);",
+											"    pm.expect(jsonData.streak).to.be.at.least(2);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/progress/analytics/summary?startDate={{$isoDatetime iso8601 0}}&endDate={{$isoDatetime iso8601 6}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress",
+										"analytics",
+										"summary"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "{{$isoDatetime iso8601 0}}"
+										},
+										{
+											"key": "endDate",
+											"value": "{{$isoDatetime iso8601 6}}"
+										}
+									]
+								},
+								"description": "Get a summary of progress for the first week"
+							}
+						},
+						{
+							"name": "Get HTML & CSS Fundamentals Completion",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Completion summary contains expected data\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.syllabusId).to.eql(parseInt(pm.environment.get(\"syllabusId\")));",
+											"    pm.expect(jsonData.overallCompletionPercentage).to.be.at.least(20);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/progress/analytics/completion/{{syllabusId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress",
+										"analytics",
+										"completion",
+										"{{syllabusId}}"
+									]
+								},
+								"description": "Get completion summary for the syllabus after the first week"
+							}
+						},
+						{
+							"name": "Get Current Streak",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Streak is tracked correctly\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.streak).to.be.at.least(2);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/progress/analytics/streak",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress",
+										"analytics",
+										"streak"
+									]
+								},
+								"description": "Get the current learning streak"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Week 2",
+			"description": "Second week of the learning journey (Days 8-14)",
+			"item": [
+				{
+					"name": "Day 8",
+					"description": "Starting the second week - Continuing with responsive design",
+					"item": [
+						{
+							"name": "Complete Flexible Layouts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Progress entry created\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    pm.expect(jsonData.status).to.eql(\"COMPLETED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": \"{{subtopic6Id}}\",\n    \"itemType\": \"SUBTOPIC\",\n    \"date\": \"{{$isoDatetime iso8601 7}}\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 60,\n    \"notes\": \"Completed learning about flexible layouts. Covered CSS Grid and created a responsive layout combining Flexbox and Grid.\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/progress",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"progress"
+									]
+								},
+								"description": "Record progress for completing flexible layouts"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "verificationToken",
+			"value": "sample-verification-token",
+			"type": "string",
+			"description": "Replace with actual verification token from email"
+		}
+	]
+}

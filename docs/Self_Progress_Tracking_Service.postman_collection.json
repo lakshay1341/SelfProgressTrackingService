@@ -1,0 +1,1437 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6",
+		"name": "Self Progress Tracking Service",
+		"description": "A comprehensive collection for the Self Progress Tracking Service REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Authentication endpoints for user registration, login, and token management",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user with username, email, and password. Email verification is required."
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"accessToken\", jsonData.accessToken);",
+									"pm.environment.set(\"refreshToken\", jsonData.refreshToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with username and password to get JWT tokens. The response includes accessToken, refreshToken, userId, username, email, and role."
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"accessToken\", jsonData.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						},
+						"description": "Refresh the access token using a valid refresh token. The response includes a new accessToken and the same refreshToken."
+					}
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-email?token=verification-token-uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"verify-email"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "verification-token-uuid",
+									"description": "The verification token sent to the user's email"
+								}
+							]
+						},
+						"description": "Verify a user's email address using the verification token sent to their email."
+					}
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"description": "Health check endpoint for monitoring service status",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check the health status of the service. Returns status, timestamp, and service name."
+					}
+				}
+			]
+		},
+		{
+			"name": "Syllabus",
+			"description": "Endpoints for managing syllabi",
+			"item": [
+				{
+					"name": "Create Syllabus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Java Programming\",\n    \"description\": \"Complete Java programming syllabus from basics to advanced\",\n    \"isPublic\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/syllabi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi"
+							]
+						},
+						"description": "Create a new syllabus with title, description, and visibility setting."
+					}
+				},
+				{
+					"name": "Get Syllabus by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"1"
+							]
+						},
+						"description": "Get a specific syllabus by its ID. User must own the syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Update Syllabus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Java Programming\",\n    \"description\": \"Updated description for Java programming syllabus\",\n    \"isPublic\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"1"
+							]
+						},
+						"description": "Update an existing syllabus. User must own the syllabus."
+					}
+				},
+				{
+					"name": "Delete Syllabus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"1"
+							]
+						},
+						"description": "Delete a syllabus by its ID. User must own the syllabus."
+					}
+				},
+				{
+					"name": "Get User Syllabi",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi?page=0&size=10&sort=createdAt,desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc",
+									"description": "Sort field and direction"
+								}
+							]
+						},
+						"description": "Get all syllabi owned by the authenticated user. Supports pagination and sorting."
+					}
+				},
+				{
+					"name": "Get Public Syllabi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/public?page=0&size=10&sort=createdAt,desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"public"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc",
+									"description": "Sort field and direction"
+								}
+							]
+						},
+						"description": "Get all public syllabi. Does not require authentication. Supports pagination and sorting."
+					}
+				},
+				{
+					"name": "Get Syllabus by Shareable Link",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/public/abc123def456",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"public",
+								"abc123def456"
+							]
+						},
+						"description": "Get a syllabus using its shareable link. Does not require authentication."
+					}
+				},
+				{
+					"name": "Generate Shareable Link",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/syllabi/1/share",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"syllabi",
+								"1",
+								"share"
+							]
+						},
+						"description": "Generate a shareable link for a syllabus. User must own the syllabus."
+					}
+				}
+			]
+		},
+		{
+			"name": "Topic",
+			"description": "Endpoints for managing topics within subjects",
+			"item": [
+				{
+					"name": "Create Topic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Object-Oriented Programming\",\n    \"description\": \"OOP concepts in Java\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"2023-11-30\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics/subject/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"subject",
+								"1"
+							]
+						},
+						"description": "Create a new topic within a subject. The subjectId is specified in the URL path."
+					}
+				},
+				{
+					"name": "Get Topic by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/topics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"1"
+							]
+						},
+						"description": "Get a specific topic by its ID. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Get Topics by Subject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/topics/subject/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"subject",
+								"1"
+							]
+						},
+						"description": "Get all topics within a subject. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Update Topic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated OOP\",\n    \"description\": \"Updated OOP concepts in Java\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"2023-12-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"1"
+							]
+						},
+						"description": "Update an existing topic. User must own the parent syllabus."
+					}
+				},
+				{
+					"name": "Delete Topic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/topics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"1"
+							]
+						},
+						"description": "Delete a topic by its ID. User must own the parent syllabus."
+					}
+				}
+			]
+		},
+		{
+			"name": "Subject",
+			"description": "Endpoints for managing subjects within syllabi",
+			"item": [
+				{
+					"name": "Create Subject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Core Java\",\n    \"description\": \"Fundamentals of Java programming\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"2023-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"1"
+							]
+						},
+						"description": "Create a new subject within a syllabus. The syllabusId is specified in the URL path."
+					}
+				},
+				{
+					"name": "Get Subject by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subjects/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"1"
+							]
+						},
+						"description": "Get a specific subject by its ID. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Get Subjects by Syllabus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subjects/syllabus/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"syllabus",
+								"1"
+							]
+						},
+						"description": "Get all subjects within a syllabus. User must own the syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Update Subject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Core Java\",\n    \"description\": \"Updated fundamentals of Java programming\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"2024-01-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subjects/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"1"
+							]
+						},
+						"description": "Update an existing subject. User must own the parent syllabus."
+					}
+				},
+				{
+					"name": "Delete Subject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subjects/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subjects",
+								"1"
+							]
+						},
+						"description": "Delete a subject by its ID. User must own the parent syllabus."
+					}
+				}
+			]
+		},
+		{
+			"name": "SubTopic",
+			"description": "Endpoints for managing subtopics within topics",
+			"item": [
+				{
+					"name": "Create SubTopic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Inheritance\",\n    \"description\": \"Inheritance in Java\",\n    \"order\": 1,\n    \"targetCompletionDate\": \"2023-11-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/topic/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"topic",
+								"1"
+							]
+						},
+						"description": "Create a new subtopic within a topic. The topicId is specified in the URL path."
+					}
+				},
+				{
+					"name": "Get SubTopic by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"1"
+							]
+						},
+						"description": "Get a specific subtopic by its ID. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Get SubTopics by Topic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/topic/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"topic",
+								"1"
+							]
+						},
+						"description": "Get all subtopics within a topic. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Update SubTopic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Inheritance\",\n    \"description\": \"Updated inheritance in Java\",\n    \"order\": 2,\n    \"targetCompletionDate\": \"2023-11-20\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"1"
+							]
+						},
+						"description": "Update an existing subtopic. User must own the parent syllabus."
+					}
+				},
+				{
+					"name": "Delete SubTopic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subtopics/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subtopics",
+								"1"
+							]
+						},
+						"description": "Delete a subtopic by its ID. User must own the parent syllabus."
+					}
+				}
+			]
+		},
+		{
+			"name": "Resource",
+			"description": "Endpoints for managing resources attached to subjects, topics, or subtopics",
+			"item": [
+				{
+					"name": "Create Resource",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemType\": \"SUBJECT\",\n    \"resourceType\": \"LINK\",\n    \"content\": \"https://docs.oracle.com/javase/tutorial/\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resources/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resources",
+								"1"
+							]
+						},
+						"description": "Create a new resource attached to a subject, topic, or subtopic. The itemId is specified in the URL path, and the itemType is specified in the request body."
+					}
+				},
+				{
+					"name": "Get Resource by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resources/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resources",
+								"1"
+							]
+						},
+						"description": "Get a specific resource by its ID. User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Get Resources by Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resources/item/SUBJECT/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resources",
+								"item",
+								"SUBJECT",
+								"1"
+							]
+						},
+						"description": "Get all resources attached to a specific item (subject, topic, or subtopic). User must own the parent syllabus or it must be public."
+					}
+				},
+				{
+					"name": "Update Resource",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemType\": \"SUBJECT\",\n    \"resourceType\": \"LINK\",\n    \"content\": \"https://www.oracle.com/java/technologies/javase-documentation.html\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/resources/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resources",
+								"1"
+							]
+						},
+						"description": "Update an existing resource. User must own the parent syllabus."
+					}
+				},
+				{
+					"name": "Delete Resource",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/resources/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"resources",
+								"1"
+							]
+						},
+						"description": "Delete a resource by its ID. User must own the parent syllabus."
+					}
+				}
+			]
+		},
+		{
+			"name": "Progress",
+			"description": "Endpoints for tracking progress on subjects, topics, or subtopics",
+			"item": [
+				{
+					"name": "Create Progress Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemId\": 1,\n    \"itemType\": \"SUBJECT\",\n    \"date\": \"2023-10-15\",\n    \"status\": \"IN_PROGRESS\",\n    \"timeSpentMinutes\": 60,\n    \"notes\": \"Completed first chapter\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/progress",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress"
+							]
+						},
+						"description": "Create a new progress entry for a subject, topic, or subtopic. The itemId and itemType are specified in the request body."
+					}
+				},
+				{
+					"name": "Get Progress Entry by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"1"
+							]
+						},
+						"description": "Get a specific progress entry by its ID. User must own the progress entry."
+					}
+				},
+				{
+					"name": "Get User Progress Entries",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress?page=0&size=10&sort=date,desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size"
+								},
+								{
+									"key": "sort",
+									"value": "date,desc",
+									"description": "Sort field and direction"
+								}
+							]
+						},
+						"description": "Get all progress entries for the authenticated user. Supports pagination and sorting."
+					}
+				},
+				{
+					"name": "Update Progress Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemId\": 1,\n    \"itemType\": \"SUBJECT\",\n    \"date\": \"2023-10-15\",\n    \"status\": \"COMPLETED\",\n    \"timeSpentMinutes\": 90,\n    \"notes\": \"Completed all chapters\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/progress/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"1"
+							]
+						},
+						"description": "Update an existing progress entry. User must own the progress entry."
+					}
+				},
+				{
+					"name": "Delete Progress Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"1"
+							]
+						},
+						"description": "Delete a progress entry by its ID. User must own the progress entry."
+					}
+				}
+			]
+		},
+		{
+			"name": "Analytics",
+			"description": "Endpoints for analytics and reporting on progress",
+			"item": [
+				{
+					"name": "Get Syllabus Completion Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/analytics/completion/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"analytics",
+								"completion",
+								"1"
+							]
+						},
+						"description": "Get a completion summary for a syllabus, including overall completion percentage and completion details for each subject."
+					}
+				},
+				{
+					"name": "Get User Progress Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/analytics/summary?startDate=2023-01-01&endDate=2023-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"analytics",
+								"summary"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2023-01-01",
+									"description": "Start date for the summary (ISO format)"
+								},
+								{
+									"key": "endDate",
+									"value": "2023-12-31",
+									"description": "End date for the summary (ISO format)"
+								}
+							]
+						},
+						"description": "Get a progress summary for the authenticated user within a date range, including total days with progress, total time spent, and daily progress details."
+					}
+				},
+				{
+					"name": "Get User Time Distribution",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/analytics/time-distribution",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"analytics",
+								"time-distribution"
+							]
+						},
+						"description": "Get a time distribution summary for the authenticated user, showing how time is distributed across different subjects."
+					}
+				},
+				{
+					"name": "Get Current Streak",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/progress/analytics/streak",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"progress",
+								"analytics",
+								"streak"
+							]
+						},
+						"description": "Get the current streak (consecutive days with progress) for the authenticated user."
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		}
+	]
+}
