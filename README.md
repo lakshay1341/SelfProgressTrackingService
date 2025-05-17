@@ -37,7 +37,7 @@ A backend service for tracking personal learning progress through structured syl
 2. **Default database configuration**
    - URL: `jdbc:postgresql://localhost:5432/progress_tracking`
    - Username: `postgres`
-   - Password: `postgres`
+   - Password: `root`
 
    These settings can be modified in `src/main/resources/application.yml`
 
